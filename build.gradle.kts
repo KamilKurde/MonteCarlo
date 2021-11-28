@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "pl.szkolykreatywne"
-version = "1.0"
+version = "1.1"
 
 repositories {
 	google()
@@ -32,7 +32,7 @@ compose.desktop {
 			targetFormats(TargetFormat.Exe)
 			packageName = "MonteCarlo"
 			vendor = "github.com/KamilKurde"
-			packageVersion = "1.0.0"
+			packageVersion = "1.1.0"
 			windows {
 				iconFile.set(project.file("src" + File.separator + "main" + File.separator + "resources" + File.separator + "icon.ico"))
 			}
