@@ -14,7 +14,7 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.time.*
 
-class MonteCarloWorker(private val r: Double, scope: CoroutineScope, private val repeats: ULong) {
+class MonteCarloWorker(private val r: Double, private val repeats: ULong) {
 	var counter = 0UL
 	var inCircle = 0UL
 
@@ -22,7 +22,7 @@ class MonteCarloWorker(private val r: Double, scope: CoroutineScope, private val
 
 	private fun randomDouble() = Random.nextDouble(-r, r)
 
-	private suspend fun calc() {
+	suspend fun calc() {
 		for (i in 0UL until repeats) {
 			val x = randomDouble()
 			val y = randomDouble()
@@ -33,30 +33,29 @@ class MonteCarloWorker(private val r: Double, scope: CoroutineScope, private val
 			}
 			counter++
 		}
-		CoroutineScope(Job() + Dispatchers.Main).launch{
+		withContext(Dispatchers.Main) {
 			active = false
 		}
-	}
-
-	init {
-		scope.launch { calc() }
 	}
 }
 
 val icon @Composable get() = painterResource("icon.ico")
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalStdlibApi::class)
 fun main(vararg args: String) = application {
 	var counter by mutableStateOf(0UL)
 	var inCircle by mutableStateOf(0UL)
 	val desiredCounter = args.firstOrNull()?.toULong() ?: ULong.MAX_VALUE
-	var totalTime = 0L
+	var totalTime = 1L
 	val workerScope = CoroutineScope(Job() + Dispatchers.Default)
 	val uiScope = CoroutineScope(Job() + Dispatchers.Main)
 	val threads = Runtime.getRuntime().availableProcessors()
 	val repeatsPerThread = desiredCounter / threads.toUInt()
 	val r = sqrt(Double.MAX_VALUE / 2)
-	val workers = Array(threads) { MonteCarloWorker(r, workerScope, repeatsPerThread) } + MonteCarloWorker(r, uiScope, desiredCounter - (threads.toUInt() * repeatsPerThread))
+	val workers = buildList {
+		add(MonteCarloWorker(r, desiredCounter - (threads.toUInt() * repeatsPerThread)))
+		addAll(Array(threads) { MonteCarloWorker(r, repeatsPerThread) })
+	}.toTypedArray()
 	Window(
 		onCloseRequest = {
 			workerScope.cancel()
@@ -96,7 +95,9 @@ fun main(vararg args: String) = application {
 		}
 	}
 	uiScope.launch {
+		delay(1000L)
 		var lastCalc = System.currentTimeMillis()
+		workers.forEach { workerScope.launch { it.calc() } }
 		val delay = 33L
 		while (isActive) {
 			counter = workers.sumOf { it.counter }
