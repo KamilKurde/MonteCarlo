@@ -33,7 +33,9 @@ class MonteCarloWorker(private val r: Double, scope: CoroutineScope, private val
 			}
 			counter++
 		}
-		active = false
+		CoroutineScope(Job() + Dispatchers.Main).launch{
+			active = false
+		}
 	}
 
 	init {
