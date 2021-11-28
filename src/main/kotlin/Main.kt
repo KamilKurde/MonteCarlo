@@ -62,7 +62,7 @@ fun main(vararg args: String) = application {
 			exitApplication()
 		},
 		resizable = false,
-		state = rememberWindowState(size = DpSize(320.dp, 256.dp)),
+		state = rememberWindowState(size = DpSize(352.dp, 256.dp)),
 		icon = icon,
 		title = "Monte Carlo PI Calculator"
 	) {
