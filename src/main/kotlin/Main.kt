@@ -1,25 +1,18 @@
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.coroutineContext
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
-import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
-import kotlin.time.toDuration
+import kotlin.time.*
 
 class MonteCarloWorker(private val r: Double, scope: CoroutineScope, private val repeats: ULong) {
 	var counter = 0UL
